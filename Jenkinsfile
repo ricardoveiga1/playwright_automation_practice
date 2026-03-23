@@ -20,7 +20,6 @@ pipeline {
     }
     
     environment {
-        NODE_VERSION = '18'
         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = '0'
     }
     
@@ -32,26 +31,19 @@ pipeline {
             }
         }
         
-        stage('Setup Environment') {
+        stage('Verify Environment') {
             steps {
-                echo "Setting up Node.js ${NODE_VERSION}..."
-                script {
-                    // Use Node.js version from tool configuration
-                    nodejs(nodeJSInstallationName: "Node ${NODE_VERSION}") {
-                        sh 'node --version'
-                        sh 'npm --version'
-                    }
-                }
+                echo 'Verifying Node.js and npm...'
+                sh 'node --version'
+                sh 'npm --version'
             }
         }
         
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                nodejs(nodeJSInstallationName: "Node ${NODE_VERSION}") {
-                    sh 'npm ci'
-                    sh 'npx playwright install --with-deps'
-                }
+                sh 'npm ci'
+                sh 'npx playwright install --with-deps'
             }
         }
         
@@ -61,11 +53,7 @@ pipeline {
             }
             steps {
                 echo "Running API tests on ${params.ENVIRONMENT} environment..."
-                nodejs(nodeJSInstallationName: "Node ${NODE_VERSION}") {
-                    script {
-                        sh "npm run api_tests_${params.ENVIRONMENT}"
-                    }
-                }
+                sh "npm run api_tests_${params.ENVIRONMENT}"
             }
         }
         
@@ -75,11 +63,7 @@ pipeline {
             }
             steps {
                 echo "Running E2E tests on ${params.ENVIRONMENT} environment..."
-                nodejs(nodeJSInstallationName: "Node ${NODE_VERSION}") {
-                    script {
-                        sh "npm run e2e_tests_${params.ENVIRONMENT}"
-                    }
-                }
+                sh "npm run e2e_tests_${params.ENVIRONMENT}"
             }
         }
         
