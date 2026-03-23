@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+            args '--user root'
+        }
+    }
     
     parameters {
         choice(
@@ -20,22 +25,17 @@ pipeline {
     }
     
     environment {
-        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = '0'
+        CI = 'true'
+        HOME = '/root'
     }
     
     stages {
-        stage('Checkout') {
-            steps {
-                echo 'Checking out code...'
-                checkout scm
-            }
-        }
-        
         stage('Verify Environment') {
             steps {
                 echo 'Verifying Node.js and npm...'
                 sh 'node --version'
                 sh 'npm --version'
+                sh 'npx playwright --version'
             }
         }
         
@@ -49,7 +49,6 @@ pipeline {
         
         stage('Run API Tests') {
             when {
-                expression { params.TEST_TYPE == 'all' || params.TEST_TYPE == 'api' }
             }
             steps {
                 echo "Running API tests on ${params.ENVIRONMENT} environment..."
