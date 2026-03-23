@@ -1,11 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            // Official Playwright Docker image with Node.js and browsers pre-installed
-            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-            args '-u root:root'
-        }
-    }
+    agent any
     
     parameters {
         choice(
@@ -25,11 +19,44 @@ pipeline {
         )
     }
     
+    environment {
+        NVM_DIR = "${HOME}/.nvm"
+        NODE_VERSION = '18'
+    }
+    
     stages {
+        stage('Setup Node.js') {
+            steps {
+                echo 'Installing Node.js using nvm...'
+                sh '''
+                    # Install nvm if not present
+                    if [ ! -d "$NVM_DIR" ]; then
+                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+                    fi
+                    
+                    # Load nvm
+                    . "$NVM_DIR/nvm.sh"
+                    
+                    # Install and use Node.js
+                    nvm install ${NODE_VERSION}
+                    nvm use ${NODE_VERSION}
+                    
+                    # Verify installation
+                    node --version
+                    npm --version
+                '''
+            }
+        }
+        
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                sh 'npm install'
+                sh '''
+                    . "$NVM_DIR/nvm.sh"
+                    nvm use ${NODE_VERSION}
+                    npm install
+                    npx playwright install --with-deps
+                '''
             }
         }
         
@@ -39,7 +66,11 @@ pipeline {
             }
             steps {
                 echo "Running API tests on ${params.ENVIRONMENT} environment..."
-                sh "npm run api_tests_${params.ENVIRONMENT}"
+                sh """
+                    . "\$NVM_DIR/nvm.sh"
+                    nvm use \${NODE_VERSION}
+                    npm run api_tests_${params.ENVIRONMENT}
+                """
             }
         }
         
@@ -49,7 +80,11 @@ pipeline {
             }
             steps {
                 echo "Running E2E tests on ${params.ENVIRONMENT} environment..."
-                sh "npm run e2e_tests_${params.ENVIRONMENT}"
+                sh """
+                    . "\$NVM_DIR/nvm.sh"
+                    nvm use \${NODE_VERSION}
+                    npm run e2e_tests_${params.ENVIRONMENT}
+                """
             }
         }
         
@@ -77,6 +112,12 @@ pipeline {
             // Archive HTML report and test results
             archiveArtifacts artifacts: 'html-report/**/*', allowEmptyArchive: true, followSymlinks: false
             archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true, followSymlinks: false
+        }
+        success {
+            echo '✅ Pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Pipeline failed!'
         }
     }
 }
