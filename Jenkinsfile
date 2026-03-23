@@ -56,7 +56,7 @@ pipeline {
                 sh '''
                     . "$NVM_DIR/nvm.sh"
                     nvm use ${NODE_VERSION}
-                    npm ci
+                    npm install
                     npx playwright install --with-deps
                 '''
             }
