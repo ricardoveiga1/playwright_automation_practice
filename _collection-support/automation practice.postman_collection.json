@@ -1,0 +1,234 @@
+{
+	"info": {
+		"_postman_id": "098781bf-7049-4c0b-a55e-62964e68de8d",
+		"name": "automation practice",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get all products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://automationexercise.com/api/productsList",
+					"protocol": "https",
+					"host": [
+						"automationexercise",
+						"com"
+					],
+					"path": [
+						"api",
+						"productsList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search product",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "search_product",
+							"value": "Sleeveless Dress",
+							"type": "default"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://automationexercise.com/api/searchProduct",
+					"protocol": "https",
+					"host": [
+						"automationexercise",
+						"com"
+					],
+					"path": [
+						"api",
+						"searchProduct"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register new user",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const currentTimestamp = new Date().getTime();",
+							"const email = `rick_veiga+reject+${currentTimestamp}@test.com`;",
+							"pm.collectionVariables.set(\"email\", email)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "teste1234",
+							"type": "default"
+						},
+						{
+							"key": "email",
+							"value": "{{email}}",
+							"type": "default"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "default"
+						},
+						{
+							"key": "firstname",
+							"value": "testeik",
+							"type": "default"
+						},
+						{
+							"key": "lastname",
+							"value": "testrik",
+							"type": "default"
+						},
+						{
+							"key": "address1",
+							"value": "sp capital",
+							"type": "default"
+						},
+						{
+							"key": "country",
+							"value": "Brazil",
+							"type": "default"
+						},
+						{
+							"key": "state",
+							"value": "São Paulo",
+							"type": "default"
+						},
+						{
+							"key": "city",
+							"value": "São Paulo",
+							"type": "default"
+						},
+						{
+							"key": "zipcode",
+							"value": "01290",
+							"type": "default"
+						},
+						{
+							"key": "mobile_number",
+							"value": "+1234567890",
+							"type": "default"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://automationexercise.com/api/createAccount",
+					"protocol": "https",
+					"host": [
+						"automationexercise",
+						"com"
+					],
+					"path": [
+						"api",
+						"createAccount"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login with valid details",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "{{email}}",
+							"type": "default"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://automationexercise.com/api/verifyLogin",
+					"protocol": "https",
+					"host": [
+						"automationexercise",
+						"com"
+					],
+					"path": [
+						"api",
+						"verifyLogin"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "email",
+			"value": "",
+			"type": "default",
+			"disabled": true
+		},
+		{
+			"key": "password",
+			"value": "test123",
+			"type": "default"
+		},
+		{
+			"key": "email",
+			"value": ""
+		}
+	]
+}
