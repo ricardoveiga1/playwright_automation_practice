@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            // Official Playwright Docker image with Node.js and browsers pre-installed
+            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+            args '-u root:root'
+        }
+    }
     
     parameters {
         choice(
@@ -19,46 +25,11 @@ pipeline {
         )
     }
     
-    environment {
-        NVM_DIR = "${HOME}/.nvm"
-        NODE_VERSION = '18'
-    }
-    
     stages {
-        stage('Setup Node.js') {
-            steps {
-                script {
-                    echo 'Installing Node.js using nvm...'
-                    sh '''
-                        # Install nvm if not present
-                        if [ ! -d "$NVM_DIR" ]; then
-                            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-                        fi
-                        
-                        # Load nvm
-                        . "$NVM_DIR/nvm.sh"
-                        
-                        # Install and use Node.js
-                        nvm install ${NODE_VERSION}
-                        nvm use ${NODE_VERSION}
-                        
-                        # Verify installation
-                        node --version
-                        npm --version
-                    '''
-                }
-            }
-        }
-        
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                sh '''
-                    . "$NVM_DIR/nvm.sh"
-                    nvm use ${NODE_VERSION}
-                    npm install
-                    npx playwright install --with-deps
-                '''
+                sh 'npm install'
             }
         }
         
@@ -68,11 +39,7 @@ pipeline {
             }
             steps {
                 echo "Running API tests on ${params.ENVIRONMENT} environment..."
-                sh """
-                    . "\$NVM_DIR/nvm.sh"
-                    nvm use \${NODE_VERSION}
-                    npm run api_tests_${params.ENVIRONMENT}
-                """
+                sh "npm run api_tests_${params.ENVIRONMENT}"
             }
         }
         
@@ -82,11 +49,7 @@ pipeline {
             }
             steps {
                 echo "Running E2E tests on ${params.ENVIRONMENT} environment..."
-                sh """
-                    . "\$NVM_DIR/nvm.sh"
-                    nvm use \${NODE_VERSION}
-                    npm run e2e_tests_${params.ENVIRONMENT}
-                """
+                sh "npm run e2e_tests_${params.ENVIRONMENT}"
             }
         }
         
@@ -96,46 +59,24 @@ pipeline {
             }
             steps {
                 echo 'Publishing test results...'
-                script {
-                    // Publish HTML report
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'html-report',
-                        reportFiles: 'index.html',
-                        reportName: 'Playwright Test Report',
-                        reportTitles: 'Playwright Tests'
-                    ])
-                    
-                    // Archive test results
-                    archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true
-                    archiveArtifacts artifacts: 'html-report/**/*', allowEmptyArchive: true
-                }
+                publishHTML([
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'html-report',
+                    reportFiles: 'index.html',
+                    reportName: 'Playwright Test Report',
+                    reportTitles: 'Playwright Tests'
+                ])
             }
         }
     }
     
     post {
         always {
-            echo 'Cleaning up workspace...'
-            cleanWs(
-                deleteDirs: true,
-                disableDeferredWipeout: true,
-                patterns: [
-                    [pattern: 'node_modules', type: 'EXCLUDE'],
-                    [pattern: '.git', type: 'EXCLUDE']
-                ]
-            )
-        }
-        success {
-            echo '✅ Pipeline completed successfully!'
-        }
-        failure {
-            echo '❌ Pipeline failed!'
-        }
-        unstable {
-            echo '⚠️ Pipeline is unstable!'
+            // Archive HTML report and test results
+            archiveArtifacts artifacts: 'html-report/**/*', allowEmptyArchive: true, followSymlinks: false
+            archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true, followSymlinks: false
         }
     }
 }
