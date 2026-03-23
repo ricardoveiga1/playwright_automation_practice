@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-            args '--user root'
-        }
-    }
+    agent any
     
     parameters {
         choice(
@@ -25,34 +20,59 @@ pipeline {
     }
     
     environment {
-        CI = 'true'
-        HOME = '/root'
+        NVM_DIR = "${HOME}/.nvm"
+        NODE_VERSION = '18'
     }
     
     stages {
-        stage('Verify Environment') {
+        stage('Setup Node.js') {
             steps {
-                echo 'Verifying Node.js and npm...'
-                sh 'node --version'
-                sh 'npm --version'
-                sh 'npx playwright --version'
+                script {
+                    echo 'Installing Node.js using nvm...'
+                    sh '''
+                        # Install nvm if not present
+                        if [ ! -d "$NVM_DIR" ]; then
+                            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+                        fi
+                        
+                        # Load nvm
+                        . "$NVM_DIR/nvm.sh"
+                        
+                        # Install and use Node.js
+                        nvm install ${NODE_VERSION}
+                        nvm use ${NODE_VERSION}
+                        
+                        # Verify installation
+                        node --version
+                        npm --version
+                    '''
+                }
             }
         }
         
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                sh 'npm ci'
-                sh 'npx playwright install --with-deps'
+                sh '''
+                    . "$NVM_DIR/nvm.sh"
+                    nvm use ${NODE_VERSION}
+                    npm ci
+                    npx playwright install --with-deps
+                '''
             }
         }
         
         stage('Run API Tests') {
             when {
+                expression { params.TEST_TYPE == 'all' || params.TEST_TYPE == 'api' }
             }
             steps {
                 echo "Running API tests on ${params.ENVIRONMENT} environment..."
-                sh "npm run api_tests_${params.ENVIRONMENT}"
+                sh """
+                    . "\$NVM_DIR/nvm.sh"
+                    nvm use \${NODE_VERSION}
+                    npm run api_tests_${params.ENVIRONMENT}
+                """
             }
         }
         
@@ -62,7 +82,11 @@ pipeline {
             }
             steps {
                 echo "Running E2E tests on ${params.ENVIRONMENT} environment..."
-                sh "npm run e2e_tests_${params.ENVIRONMENT}"
+                sh """
+                    . "\$NVM_DIR/nvm.sh"
+                    nvm use \${NODE_VERSION}
+                    npm run e2e_tests_${params.ENVIRONMENT}
+                """
             }
         }
         
