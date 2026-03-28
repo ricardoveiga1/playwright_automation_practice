@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
-import { DataGenerator } from "../../Services/DataGenerator";
-import { AutomationPractice } from "../../Services/AutomationPractice";
+import { DataGenerator } from "../../utils/dataGenerator";
 import { testData } from "../../data/data";
+import { PageManager } from "../../utils/pageManager";
 
 
 test.describe('suite', () => {
@@ -18,11 +18,11 @@ test.describe('suite', () => {
     console.log(`That's all, folks!`)
   });
 
-  test('Test Case 1: Register User', async ({page}) => {
+  test('Test Case 1: Register User', async ({ page }) => {
     name = await dataGenerator.randomString(10);
     email = await dataGenerator.randomEmail();
 
-    const practicePage = new AutomationPractice(page, name);
+    const pageManager = new PageManager(page);
 
     const data = {
       url: process.env.BASE_URL,
@@ -43,7 +43,7 @@ test.describe('suite', () => {
       mobileNumber: testData.mobileNumber
     };
 
-    await practicePage.registerUser(data);
+    await pageManager.automationPractice.registerUser(data);
 
   });
 

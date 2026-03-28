@@ -25,7 +25,7 @@ const config: PlaywrightTestConfig = {
     viewport: null, //{ width: 1920, height: 1080 },
     ignoreHTTPSErrors: true,
     launchOptions: {
-      slowMo: 250,
+      slowMo: 1100,
       channel: 'chrome',
       args: [
         '--start-maximized',

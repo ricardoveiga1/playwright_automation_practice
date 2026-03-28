@@ -9,8 +9,9 @@ export class AutomationPracticeAPI extends RequestLogger {
   page: Page;
   baseUrlApi: string;
 
-  constructor(expectedStatus: number = 200) {
+  constructor(page: Page, expectedStatus: number = 200) {
     super();
+    this.page = page;
     this.expectedStatus = expectedStatus;
     this.baseUrlApi = process.env.BASE_URL_API;
   };
@@ -23,6 +24,7 @@ export class AutomationPracticeAPI extends RequestLogger {
       const url = `${process.env.BASE_URL_API}/productsList`;
   
       const response = await context.get(url);
+      console.log((JSON.stringify(await response.json())));
   
       if(response.status() == this.expectedStatus) {
         resp = await response.json();

@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "ui_mode": "npx playwright test --ui",
-    "auto-commit": "bash ./scripts/git_auto_commit.sh",
+    "auto-commit": "bash ./_scripts/git_auto_commit.sh",
+    "kill:processes": "./_scripts/kill_processes.sh",
+    "kill:ports": "./_scripts/kill_ports.sh",
     "kill_npm": "pkill -f 'npm run'",
     "setup": "npm i && npm i -g ts-node && npx playwright install --with-deps",
     "template": "cross-env test_env=stage npx playwright test --config=e2e.playwright.config.ts --project=template",
@@ -15,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alexzavg/playwright_automation_showcase"
+    "url": ""
   },
   "license": "ISC",
   "devDependencies": {

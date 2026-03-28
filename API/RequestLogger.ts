@@ -1,4 +1,4 @@
-import { color } from "./Common";
+import { color } from "../utils/common";
 
 export class RequestLogger {
 

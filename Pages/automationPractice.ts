@@ -1,6 +1,6 @@
 // Documentation https://playwright.dev/docs/api/class-apirequestcontext
 import { Page, test, expect } from '@playwright/test';
-import { PageActions } from '../Pages/PageActions';
+import { PageActions } from './PageActions';
 
 interface RegisterUserParams {
   url: string;
@@ -57,6 +57,7 @@ export class AutomationPractice extends PageActions {
   accountDeletedText: string;
 
   constructor(page: Page, name: string) {
+    
     super(page);
     this.page = page;
     this.headerLogo = '[src="/static/images/home/logo.png"]';
