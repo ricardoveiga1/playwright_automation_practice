@@ -3,6 +3,7 @@
 - [MCP Servers](#mcp-servers)
 
 # Demo
+Projeto pensado em executar via scriots com linha de comando, e não com playwrioght UI
 
 Repository example for automation tests exercises https://automationexercise.com/test_cases
 
