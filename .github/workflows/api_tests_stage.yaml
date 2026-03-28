@@ -18,7 +18,7 @@ env:
   SLACK_USER:      ${{vars.SLACK_USER}}
   CI_PIPELINE_URL: "https://github.com/ricardoveiga1/playwright_automation_practice/actions/runs/${{github.run_id}}"
   REPORT_URL:      ${{vars.HTML_REPORT_API_TESTS_STAGE}}
-  NODE_VERSION:    20.x
+  NODE_VERSION:    22.x
 
 jobs:
   api_tests:
