@@ -11,5 +11,3 @@ package-lock
 .env.dev
 .env.stage
 .env.prod
-
-.github
