@@ -146,15 +146,55 @@ Atualize a variable `HTML_REPORT_API_TESTS_STAGE` com esta URL.
 
 ## 📞 Notificações Slack (Opcional)
 
-Se quiser receber notificações no Slack:
+### Como obter os dados do Slack:
 
-1. Crie um [Incoming Webhook no Slack](https://api.slack.com/messaging/webhooks)
-2. Configure as variables:
-   - `SLACK_WEBHOOK`: URL do webhook
-   - `SLACK_CHANNEL`: Nome do canal (ex: `#automation`)
-   - `SLACK_USER`: Seu @ para mencionar em falhas
+#### 🔗 SLACK_WEBHOOK (Incoming Webhook URL)
 
-Se **não quiser** notificações Slack:
+1. Acesse seu workspace do Slack no navegador
+2. Vá em **https://api.slack.com/apps**
+3. Clique em **Create New App** → **From scratch**
+4. Dê um nome ao app (ex: "Playwright Tests") e selecione seu workspace
+5. No menu lateral esquerdo, clique em **Incoming Webhooks**
+6. Ative o toggle: **Activate Incoming Webhooks** (ON)
+7. Role para baixo e clique em **Add New Webhook to Workspace**
+8. Selecione o canal onde quer receber as notificações (ex: `#automation-tests`)
+9. Clique em **Allow**
+10. **Copie a Webhook URL** que aparece
+    - Formato: `https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXX`
+    - Adicione esta URL na variable `SLACK_WEBHOOK` do GitHub
+
+#### 👤 SLACK_USER
+
+É o seu **username do Slack** precedido por `@`:
+
+- Abra o Slack → clique no seu perfil
+- Copie seu username (ex: `ricardo.veiga`)
+- Adicione `@` na frente: `@ricardo.veiga`
+- Adicione na variable `SLACK_USER` do GitHub
+
+#### 📢 SLACK_CHANNEL
+
+É o **nome do canal** onde as notificações serão enviadas:
+
+- Formato: `#nome-do-canal` (ex: `#automation-tests`, `#qa`, `#testes`)
+- Deve ser o mesmo canal que você selecionou ao criar o webhook (passo 8 acima)
+- Adicione na variable `SLACK_CHANNEL` do GitHub
+
+---
+
+### Configuração no GitHub:
+
+Após obter os dados, adicione as variables em `Settings` → `Secrets and variables` → `Actions` → `Variables`:
+
+| Variable        | Exemplo                                                     |
+| --------------- | ----------------------------------------------------------- |
+| `SLACK_WEBHOOK` | `https://hooks.slack.com/services/T00000000/B00000000/XXXX` |
+| `SLACK_CHANNEL` | `#automation-tests`                                         |
+| `SLACK_USER`    | `@ricardo.veiga`                                            |
+
+---
+
+### Se **não quiser** notificações Slack:
 
 - Você pode remover ou comentar os últimos 3 steps do workflow
 - Ou simplesmente não configurar as variables - o workflow vai falhar nesses steps, mas os testes vão executar normalmente
